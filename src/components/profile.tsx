@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Modal from './modal';
+import { data } from 'react-router-dom';
 
 export default function Profile() {
   interface Profile {
@@ -19,6 +20,7 @@ export default function Profile() {
 
   const [profile, setProfile] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,6 +31,7 @@ export default function Profile() {
       .then((data: ProfileApiResponse) => {
         setProfile(data.data);
         setTotalPages(data.total_pages);
+        setPerPage(data.per_page);
       });
   }, [page]);
 
@@ -45,13 +48,37 @@ export default function Profile() {
       console.error('User not found');
     }
   };
+  const handleList = (id: number, ref: 'prev' | 'next') => {
+    if (ref === 'prev') {
+      if (id > 1) {
+        const prevProfile = profile.find((p) => p.id === id - 1) || null;
+        setSelectedProfile(prevProfile);
+      }
+      if (id % perPage === 1 && page > 1) {
+        setPage((prev) => prev - 1);
+      }
+    } else if (ref === 'next') {
+      if (profile.find((p) => p.id === id + 1)) {
+        const nextProfile = profile.find((p) => p.id === id + 1) || null;
+        setSelectedProfile(nextProfile);
+      } else if (id % perPage === 0 && page < totalPages) {
+        setPage((prev) => prev + 1);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (profile.length > 0) {
+      setSelectedProfile(page > 1 ? profile[0] : profile[profile.length - 1]);
+    }
+  }, [profile, page]);
 
   return (
     <>
       <div className="pagination">
         {totalPages > 1 &&
           Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <button key={p} onClick={() => setPage(p)}>
+            <button key={p} onClick={() => setPage(p)} className={page === p ? 'active' : ''}>
               {p}
             </button>
           ))}
@@ -71,7 +98,10 @@ export default function Profile() {
       </div>
 
       {/* 모달 사용 */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        className="profile-detail-modal">
         {selectedProfile && (
           <div className="profile vertical">
             <b className="name">
@@ -86,6 +116,18 @@ export default function Profile() {
                 onClick={(e) => sendEmail(e, selectedProfile.id)}>
                 send email
               </button>
+            </div>
+            <div className="control-btn">
+              {selectedProfile.id !== 1 && (
+                <button type="button" onClick={() => handleList(selectedProfile?.id ?? 0, 'prev')}>
+                  이전
+                </button>
+              )}
+              {selectedProfile.id !== totalPages * perPage && (
+                <button type="button" onClick={() => handleList(selectedProfile?.id ?? 0, 'next')}>
+                  다음
+                </button>
+              )}
             </div>
           </div>
         )}

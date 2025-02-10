@@ -4,17 +4,18 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  className: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
-  if (!isOpen) return null; // 모달이 닫혀 있으면 렌더링하지 않음
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, className }) => {
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className={`modal-content ${className}`}>
         {children}
         <button className="close-button" onClick={onClose}>
-          ✖ 닫기
+          ✖
         </button>
       </div>
     </div>
