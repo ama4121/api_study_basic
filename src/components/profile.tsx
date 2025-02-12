@@ -1,44 +1,31 @@
 import { useEffect, useState } from 'react';
 import Modal from './modal';
-import { data } from 'react-router-dom';
+import { getProfileList } from 'api/profile';
+import { ProfileDetail } from 'type/profile';
 
 export default function Profile() {
-  interface Profile {
-    id: number;
-    first_name: string;
-    last_name: string;
-    email: string;
-    avatar: string;
-  }
-  interface ProfileApiResponse {
-    page: number;
-    per_page: number;
-    total: number;
-    total_pages: number;
-    data: Profile[];
-  }
-
-  const [profile, setProfile] = useState<any[]>([]);
+  const [profile, setProfile] = useState<ProfileDetail[]>([]);
   const [page, setPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<ProfileDetail | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    fetch(`https://reqres.in/api/users?page=${page}`)
-      .then((res) => res.json())
-      .then((data: ProfileApiResponse) => {
+    getProfileList(page)
+      .then((data) => {
         setProfile(data.data);
         setTotalPages(data.total_pages);
         setPerPage(data.per_page);
-      });
+      })
+      .catch((error) => console.error('Error fetching profile list:', error));
   }, [page]);
 
-  const openModal = (profile: Profile) => {
+  const openModal = (profile: ProfileDetail) => {
     setSelectedProfile(profile);
     setIsModalOpen(true);
   };
+
   const sendEmail = (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
     e.preventDefault();
     const user = profile.find((p) => p.id === id);
@@ -48,6 +35,7 @@ export default function Profile() {
       console.error('User not found');
     }
   };
+
   const handleList = (id: number, ref: 'prev' | 'next') => {
     if (ref === 'prev') {
       if (id > 1) {

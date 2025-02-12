@@ -1,3 +1,4 @@
+import CreateForm from 'components/create';
 import Profile from 'components/profile';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
       </header>
       <div className="content">
         <Profile />
+        <CreateForm></CreateForm>
       </div>
     </div>
   );

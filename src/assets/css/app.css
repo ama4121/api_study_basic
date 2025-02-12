@@ -162,3 +162,41 @@ header {
 .profile-detail-modal {
   width: 400px;
 }
+.create-form {
+  margin: 4rem auto 0;
+  padding: 2.4rem;
+  width: 36rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  background: #faeec7;
+  border-radius: 1.6rem;
+  h2 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #351e03;
+    margin-bottom: 1.6rem;
+  }
+  button {
+    display: inline-block;
+    margin-left: auto;
+    padding: 0.8rem 1.2rem;
+    border-radius: 0.8rem;
+    background: #fff;
+  }
+}
+.profile-create-modal {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 2.4rem;
+  }
+  p {
+    margin-top: 1.6rem;
+    font-size: 2rem;
+  }
+}
